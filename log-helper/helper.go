@@ -53,3 +53,16 @@ func GetUnaryServerInterceptors() []grpc.UnaryServerInterceptor {
 	}
 	return list
 }
+
+func GetStreamServerInterceptors() []grpc.StreamServerInterceptor {
+	list := []grpc.StreamServerInterceptor{
+		grpc_zap.StreamServerInterceptor(zap.L()),
+	}
+
+	if ce := zap.L().Check(zap.DebugLevel, "Lorem Ipsum"); ce != nil {
+		list = append(list, grpc_zap.PayloadStreamServerInterceptor(zap.L(), func(ctx context.Context, fullMethodName string, servingObject interface{}) bool {
+			return true
+		}))
+	}
+	return list
+}
